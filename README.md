@@ -3,6 +3,8 @@ This is a very simple console tool for monitoring column families read/write act
 
 You can see which column families mostly affects disk utilization in near real time.
 
+![Screenshot](http://i.imgur.com/6rJm3TM.png)
+
 ## Usage
 
 `java -jar ctop.jar <host:jmx_port> <key_space> [refresh_interval_sec]`
