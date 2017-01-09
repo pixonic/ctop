@@ -12,3 +12,8 @@ Default refresh interval is 10 seconds.
 Example: `java -jar ctop.jar c10:7890 PixAPI`
 
 Use Ctrl+C to exit.
+
+## Build
+Java 8 is required.
+
+`mvn package`
