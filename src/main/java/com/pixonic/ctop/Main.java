@@ -33,7 +33,7 @@ public class Main {
         ObjectName storageMBean = new ObjectName("org.apache.cassandra.db:type=StorageService");
         String releaseVersion = (String) remote.getAttribute(storageMBean, "ReleaseVersion");
         int majorVersion = Integer.valueOf(releaseVersion.substring(0, releaseVersion.indexOf('.')));
-        System.out.println("Version of connected Cassandra is " + releaseVersion);
+        System.out.println("Cassandra version is " + releaseVersion);
 
         Metrics metrics = MetricsFactory.getMetrics(majorVersion, interval, remote, keySpace);
         System.out.println("Connected. Gathering data...");

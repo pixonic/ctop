@@ -26,7 +26,7 @@ public abstract class AbstractMetrics implements Metrics {
         System.out.print("\033[H\033[2J");
         System.out.flush();
 
-        System.out.println("Cassandra top v0.1");
+        System.out.println("Cassandra top v0.2");
         System.out.println();
         System.out.println(new Date() + " / " + interval + "s");
         System.out.println();
