@@ -4,13 +4,13 @@
 
     <groupId>com.pixonic.ctop</groupId>
     <artifactId>ctop</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.2</version>
 
     <scm>
         <connection>scm:git:ssh://git@github.com/pixonic/ctop.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/pixonic/ctop.git</developerConnection>
         <url>http://github.com/pixonic/ctop</url>
-        <tag>HEAD</tag>
+        <tag>ctop-0.2</tag>
     </scm>
 
     <build>
