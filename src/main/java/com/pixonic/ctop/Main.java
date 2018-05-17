@@ -25,9 +25,7 @@ public class Main {
         if (args.length > 2) {
             interval = Integer.parseInt(args[2]);
         }
-
-        String jmxUsername = null;
-        String jmxPassword = null;
+        
         boolean hasCreds = false;
         String[] creds = null;
         if (args.length > 3) {
