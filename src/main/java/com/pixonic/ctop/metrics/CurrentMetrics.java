@@ -13,13 +13,15 @@ public class CurrentMetrics extends AbstractMetrics {
     private static final String KEY_PROPERTY = "scope";
     private static final String ATTRIBUTE = "Count";
 
-    CurrentMetrics(long interval, MBeanServerConnection remote, String keySpace) {
-        super(interval, remote, keySpace);
+    CurrentMetrics(long interval, MBeanServerConnection remote, String keySpace, MetricsMode metricsMode) {
+        super(interval, remote, keySpace, metricsMode);
     }
 
-    @Override public void printMetrics() throws Exception {
-        ObjectName readObjectName = new ObjectName("org.apache.cassandra.metrics:type=Table,keyspace=" + keySpace + ",scope=*,name=ReadLatency");
-        ObjectName writeObjectName = new ObjectName("org.apache.cassandra.metrics:type=Table,keyspace=" + keySpace + ",scope=*,name=WriteLatency");
+    @Override
+    public void printMetrics() throws Exception {
+        String ksValue = metricsMode.equals(MetricsMode.ALL) ? "*" : keySpace;
+        ObjectName readObjectName = new ObjectName("org.apache.cassandra.metrics:type=Table,keyspace=" + ksValue + ",scope=*,name=ReadLatency");
+        ObjectName writeObjectName = new ObjectName("org.apache.cassandra.metrics:type=Table,keyspace=" + ksValue + ",scope=*,name=WriteLatency");
 
         List<MonitoringEntry> readItems = getMonitoringEntryList(remote, readObjectName);
         List<MonitoringEntry> writeItems = getMonitoringEntryList(remote, writeObjectName);
@@ -35,7 +37,8 @@ public class CurrentMetrics extends AbstractMetrics {
 
         for (MonitoringEntry item : monitoringItems) {
             MonitoringEntry monitoringEntry = calculateDifference(remote, item);
-            if (monitoringEntry.count > 0) resultItems.add(new ResultItem(item.objectName, KEY_PROPERTY, monitoringEntry.count));
+            if (monitoringEntry.count > 0)
+                resultItems.add(new ResultItem(item.objectName, KEY_PROPERTY, monitoringEntry.count));
         }
 
         return resultItems;
@@ -70,5 +73,5 @@ public class CurrentMetrics extends AbstractMetrics {
             this.count = count;
         }
     }
-    
+
 }

@@ -14,11 +14,13 @@ public abstract class AbstractMetrics implements Metrics {
     protected final long interval;
     protected final MBeanServerConnection remote;
     protected final String keySpace;
+    protected final MetricsMode metricsMode;
 
-    AbstractMetrics(long interval, MBeanServerConnection remote, String keySpace) {
+    AbstractMetrics(long interval, MBeanServerConnection remote, String keySpace, MetricsMode metricsMode) {
         this.interval = interval;
         this.remote = remote;
         this.keySpace = keySpace;
+        this.metricsMode = metricsMode;
     }
 
     void printMetrics(NavigableSet<ResultItem> readResult, NavigableSet<ResultItem> writeResult) {
@@ -42,7 +44,7 @@ public abstract class AbstractMetrics implements Metrics {
         Iterator<ResultItem> readIt = readResult.iterator();
         Iterator<ResultItem> writeIt = writeResult.iterator();
         Long maxReadCount = null, maxWriteCount = null;
-        for(int i = 7; i < height; i++) {
+        for (int i = 7; i < height; i++) {
             if (readIt.hasNext()) {
                 ResultItem resultItem = readIt.next();
                 if (maxReadCount == null) maxReadCount = resultItem.count;
@@ -62,13 +64,19 @@ public abstract class AbstractMetrics implements Metrics {
         }
     }
 
-    @Override public void shutdown() {
+    @Override
+    public void shutdown() {
         shutdown = true;
     }
 
     protected String formatCounter(ResultItem resultItem, long maxCount) {
         int maxLen = String.valueOf(maxCount).length();
-        return StringUtils.leftPad(String.valueOf(resultItem.count), maxLen + 1) + " " + resultItem;
+        if (metricsMode.equals(MetricsMode.ALL)) {
+            String keySpace = resultItem.getCf().getKeyProperty("keyspace");
+            return StringUtils.leftPad(String.valueOf(resultItem.count), maxLen + 1) + " " + keySpace + "." + resultItem;
+        } else {
+            return StringUtils.leftPad(String.valueOf(resultItem.count), maxLen + 1) + " " + resultItem;
+        }
     }
 
     protected String makeLine(String left, String right, int rightPos) {

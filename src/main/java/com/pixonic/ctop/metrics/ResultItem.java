@@ -21,4 +21,8 @@ public class ResultItem implements Comparable<ResultItem> {
     @Override public String toString() {
         return cf.getKeyProperty(keyProperty);
     }
+
+    public ObjectName getCf(){
+        return cf;
+    }
 }

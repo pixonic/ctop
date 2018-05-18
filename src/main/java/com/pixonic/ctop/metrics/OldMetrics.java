@@ -13,8 +13,8 @@ public class OldMetrics extends AbstractMetrics {
     private static final String KEY_PROPERTY = "columnfamily";
     private static final String[] ATTRIBUTES = new String[] {"ReadCount", "WriteCount"};
 
-    OldMetrics(long interval, MBeanServerConnection remote, String keySpace) {
-        super(interval, remote, keySpace);
+    OldMetrics(long interval, MBeanServerConnection remote, String keySpace, MetricsMode metricsMode) {
+        super(interval, remote, keySpace, metricsMode);
     }
 
     @Override public void printMetrics() throws Exception {
