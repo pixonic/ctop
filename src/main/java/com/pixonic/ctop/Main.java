@@ -1,8 +1,12 @@
 package com.pixonic.ctop;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.graphite.Graphite;
+import com.codahale.metrics.graphite.GraphiteReporter;
 import com.pixonic.ctop.metrics.Metrics;
 import com.pixonic.ctop.metrics.MetricsFactory;
 import com.pixonic.ctop.metrics.MetricsMode;
+import com.pixonic.ctop.metrics.MetricsType;
 import com.pixonic.ctop.util.Constants;
 
 import javax.management.MBeanServerConnection;
@@ -12,8 +16,10 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 
@@ -72,6 +78,46 @@ public class Main {
         System.out.println("======= Properties Loaded =======");
         System.out.println(properties.toString());
 
+        MetricsType metricsType = MetricsType.valueOf(properties.getProperty("metrics.type", "NONE"));
+
+        switch (metricsType) {
+            case GRAPHITE: {
+                System.out.println("Registering Graphite Reporter");
+
+                String graphiteHost = properties.getProperty("graphite.host").trim();
+                int graphitePort = Integer.parseInt(properties.getProperty("graphite.port", "2003").trim());
+                String graphitePrefix = properties.getProperty("graphite.prefix", "ctop").trim();
+                int graphiteFreqInterval = Integer.parseInt(properties.getProperty("graphite.freq", "1").trim());
+
+                Graphite graphite = new Graphite(new InetSocketAddress(graphiteHost, graphitePort));
+
+                GraphiteReporter graphiteReporter = GraphiteReporter.forRegistry(new MetricRegistry())
+                        .convertRatesTo(TimeUnit.SECONDS)
+                        .convertDurationsTo(TimeUnit.MILLISECONDS)
+                        .prefixedWith(graphitePrefix)
+                        .build(graphite);
+
+                graphiteReporter.start(graphiteFreqInterval, TimeUnit.MINUTES);
+
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> graphiteReporter.stop()));
+
+
+                break;
+            }
+
+            case PROMETHEUS: {
+                System.out.println("Prometheus reporter is not supported yet!");
+                break;
+            }
+
+            case NONE:
+            default: {
+                System.out.println("No reporters registered!");
+                break;
+            }
+        }
+
+
         final JMXServiceURL target = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostAndPort + "/jmxrmi");
 
         HashMap environment = new HashMap();
@@ -91,7 +137,7 @@ public class Main {
         System.out.println("Connected. Gathering data...");
         metrics.printMetrics();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(metrics::shutdown));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> metrics.shutdown()));
     }
 
 }

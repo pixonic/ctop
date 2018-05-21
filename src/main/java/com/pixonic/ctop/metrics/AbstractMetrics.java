@@ -71,11 +71,11 @@ public abstract class AbstractMetrics implements Metrics {
 
     protected String formatCounter(ResultItem resultItem, long maxCount) {
         int maxLen = String.valueOf(maxCount).length();
-        if (metricsMode.equals(MetricsMode.ALL)) {
+        if (metricsMode.equals(MetricsMode.KEYSPACE)) {
+            return StringUtils.leftPad(String.valueOf(resultItem.count), maxLen + 1) + " " + resultItem;
+        } else {
             String keySpace = resultItem.getCf().getKeyProperty("keyspace");
             return StringUtils.leftPad(String.valueOf(resultItem.count), maxLen + 1) + " " + keySpace + "." + resultItem;
-        } else {
-            return StringUtils.leftPad(String.valueOf(resultItem.count), maxLen + 1) + " " + resultItem;
         }
     }
 
