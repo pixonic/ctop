@@ -1,6 +1,8 @@
 package com.pixonic.ctop;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * A enum describing the tty modes according to

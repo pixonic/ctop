@@ -18,6 +18,54 @@ public class Main {
 
     public static final String propertyFileName = "ctop.properties";
 
+    public void init(Properties properties) throws Exception {
+        String hostAndPort = properties.getProperty(Constants.CONFIG_HOST, "127.0.0.1").trim() + ":" + properties.getProperty(Constants.CONFIG_JMX_PORT, "7199").trim();
+        String keySpace = properties.getProperty(Constants.CASSDB_KEYSPACE).trim();
+
+        int interval = Integer.parseInt(properties.getProperty(Constants.CONFIG_INTERVAL_SEC, "10"));
+
+        String jmxUsername = properties.getProperty(Constants.CONFIG_JMX_USERNAME).trim();
+        String jmxPassword = properties.getProperty(Constants.CONFIG_JMX_PASSWORD).trim();
+
+        boolean hasCreds = false;
+        String[] creds = null;
+        if (jmxUsername != null && jmxPassword != null) {
+            creds = new String[]{jmxUsername, jmxPassword};
+            hasCreds = true;
+        }
+
+        System.out.println("Connecting to " + hostAndPort + "...");
+
+        System.out.println("======= Properties Loaded =======");
+        System.out.println(properties.toString());
+
+        MetricsType metricsType = MetricsType.valueOf(properties.getProperty("metrics.type", "NONE"));
+
+        MetricsCollector metricsCollector = MetricUtils.registerMetricsReporter(metricsType, properties);
+
+        final JMXServiceURL target = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostAndPort + "/jmxrmi");
+
+        HashMap environment = new HashMap();
+        environment.put(JMXConnector.CREDENTIALS, creds);
+
+        final JMXConnector connector = JMXConnectorFactory.connect(target, (hasCreds) ? environment : null);
+        final MBeanServerConnection remote = connector.getMBeanServerConnection();
+
+        ObjectName storageMBean = new ObjectName("org.apache.cassandra.db:type=StorageService");
+        String releaseVersion = (String) remote.getAttribute(storageMBean, "ReleaseVersion");
+        int majorVersion = Integer.valueOf(releaseVersion.substring(0, releaseVersion.indexOf('.')));
+        System.out.println("Cassandra version is " + releaseVersion);
+
+        TargetType targetType = TargetType.valueOf(properties.getProperty(Constants.CONFIG_TARGET_TYPE, "ALL"));
+
+        Metrics metrics = MetricsFactory.getMetrics(majorVersion, interval, remote, keySpace, targetType, metricsType, metricsCollector);
+        System.out.println("Connected. Gathering data...");
+        metrics.printMetrics();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> metrics.shutdown()));
+    }
+
+
     public static void main(String[] args) throws Exception {
 
         Properties properties = new Properties();
@@ -51,52 +99,9 @@ public class Main {
             }
         }
 
-        String hostAndPort = properties.getProperty(Constants.CONFIG_HOST, "127.0.0.1").trim() + ":" + properties.getProperty(Constants.CONFIG_JMX_PORT, "7199").trim();
-        String keySpace = properties.getProperty(Constants.CASSDB_KEYSPACE).trim();
-
-        int interval = Integer.parseInt(properties.getProperty(Constants.CONFIG_INTERVAL_SEC, "10"));
-
-        String jmxUsername = properties.getProperty(Constants.CONFIG_JMX_USERNAME).trim();
-        String jmxPassword = properties.getProperty(Constants.CONFIG_JMX_PASSWORD).trim();
-
-        boolean hasCreds = false;
-        String[] creds = null;
-        if (jmxUsername != null && jmxPassword != null) {
-            creds = new String[]{jmxUsername, jmxPassword};
-            hasCreds = true;
-        }
-
-        System.out.println("Connecting to " + hostAndPort + "...");
-
-        System.out.println("======= Properties Loaded =======");
-        System.out.println(properties.toString());
-
-        MetricsType metricsType = MetricsType.valueOf(properties.getProperty("metrics.type", "NONE"));
+        Main objMain = new Main();
+        objMain.init(properties);
 
 
-        MetricsCollector metricsCollector = MetricUtils.registerMetricsReporter(metricsType, properties);
-
-
-        final JMXServiceURL target = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostAndPort + "/jmxrmi");
-
-        HashMap environment = new HashMap();
-        environment.put(JMXConnector.CREDENTIALS, creds);
-
-        final JMXConnector connector = JMXConnectorFactory.connect(target, (hasCreds) ? environment : null);
-        final MBeanServerConnection remote = connector.getMBeanServerConnection();
-
-        ObjectName storageMBean = new ObjectName("org.apache.cassandra.db:type=StorageService");
-        String releaseVersion = (String) remote.getAttribute(storageMBean, "ReleaseVersion");
-        int majorVersion = Integer.valueOf(releaseVersion.substring(0, releaseVersion.indexOf('.')));
-        System.out.println("Cassandra version is " + releaseVersion);
-
-        TargetType targetType = TargetType.valueOf(properties.getProperty(Constants.CONFIG_TARGET_TYPE, "ALL"));
-
-        Metrics metrics = MetricsFactory.getMetrics(majorVersion, interval, remote, keySpace, targetType, metricsType, metricsCollector);
-        System.out.println("Connected. Gathering data...");
-        metrics.printMetrics();
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> metrics.shutdown()));
     }
-
 }

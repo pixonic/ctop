@@ -13,16 +13,18 @@ public class ResultItem implements Comparable<ResultItem> {
         this.count = count;
     }
 
-    @Override public int compareTo(ResultItem o) {
+    @Override
+    public int compareTo(ResultItem o) {
         long d = count - o.count;
         return -(d < 0 ? -1 : (d > 0 ? 1 : 0));
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return cf.getKeyProperty(keyProperty);
     }
 
-    public ObjectName getCf(){
+    public ObjectName getCf() {
         return cf;
     }
 }

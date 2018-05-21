@@ -38,8 +38,7 @@ public class MetricUtils {
 
                 metricsCollector = new MetricsCollector(metricRegistry);
 
-                Runtime.getRuntime().addShutdownHook(new Thread(() -> graphiteReporter.stop()));
-
+                Runtime.getRuntime().addShutdownHook(new Thread(graphiteReporter::stop));
 
                 break;
             }
@@ -54,7 +53,7 @@ public class MetricUtils {
 
                 metricsCollector = new MetricsCollector(metricRegistry);
 
-                Runtime.getRuntime().addShutdownHook(new Thread(() -> consoleReporter.stop()));
+                Runtime.getRuntime().addShutdownHook(new Thread(consoleReporter::stop));
                 break;
             }
 
