@@ -90,9 +90,9 @@ public class Main {
         int majorVersion = Integer.valueOf(releaseVersion.substring(0, releaseVersion.indexOf('.')));
         System.out.println("Cassandra version is " + releaseVersion);
 
-        MetricsMode metricsMode = MetricsMode.valueOf(properties.getProperty(Constants.CONFIG_MERTICS_MODE, "ALL"));
+        TargetType targetType = TargetType.valueOf(properties.getProperty(Constants.CONFIG_TARGET_TYPE, "ALL"));
 
-        Metrics metrics = MetricsFactory.getMetrics(majorVersion, interval, remote, keySpace, metricsMode, metricsType, metricsCollector);
+        Metrics metrics = MetricsFactory.getMetrics(majorVersion, interval, remote, keySpace, targetType, metricsType, metricsCollector);
         System.out.println("Connected. Gathering data...");
         metrics.printMetrics();
 

@@ -1,6 +1,6 @@
 package com.pixonic.ctop.metrics;
 
-public enum MetricsMode {
+public enum TargetType {
     KEYSPACE,
     REGEX,
     ALL;

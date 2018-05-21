@@ -14,15 +14,15 @@ public abstract class AbstractMetrics implements Metrics {
     protected final long interval;
     protected final MBeanServerConnection remote;
     protected final String keySpace;
-    protected final MetricsMode metricsMode;
+    protected final TargetType targetType;
     protected final MetricsType metricsType;
     protected final MetricsCollector metricsCollector;
 
-    AbstractMetrics(long interval, MBeanServerConnection remote, String keySpace, MetricsMode metricsMode, MetricsType metricsType, MetricsCollector metricsCollector) {
+    AbstractMetrics(long interval, MBeanServerConnection remote, String keySpace, TargetType targetType, MetricsType metricsType, MetricsCollector metricsCollector) {
         this.interval = interval;
         this.remote = remote;
         this.keySpace = keySpace;
-        this.metricsMode = metricsMode;
+        this.targetType = targetType;
         this.metricsType = metricsType;
         this.metricsCollector = metricsCollector;
     }
@@ -48,9 +48,11 @@ public abstract class AbstractMetrics implements Metrics {
         Iterator<ResultItem> readIt = readResult.iterator();
         Iterator<ResultItem> writeIt = writeResult.iterator();
         Long maxReadCount = null, maxWriteCount = null;
+
         Long totalReadCount = 0L;
         Long totalWriteCount = 0L;
         boolean isMetricsEnabled = !metricsType.equals(MetricsType.NONE);
+
         for (int i = 7; i < height; i++) {
             if (readIt.hasNext()) {
                 ResultItem resultItem = readIt.next();
@@ -58,7 +60,7 @@ public abstract class AbstractMetrics implements Metrics {
                 totalReadCount += resultItem.count;
                 leftStr = formatCounter(resultItem, maxReadCount);
 
-
+                //When graphite or console metrics push is enabled then publish it
                 if (isMetricsEnabled) {
                     String metricString = resultItem.getCf().getKeyProperty("keyspace") + ".table." + resultItem + "." + "read";
                     metricsCollector.getMetricRegistry().counter(metricString).inc(resultItem.count);
@@ -72,6 +74,7 @@ public abstract class AbstractMetrics implements Metrics {
                 totalWriteCount += resultItem.count;
                 rightStr = formatCounter(resultItem, maxWriteCount);
 
+                //When graphite or console metrics push is enabled then publish it
                 if (isMetricsEnabled) {
                     String metricString = resultItem.getCf().getKeyProperty("keyspace") + ".table." + resultItem + "." + "write";
                     metricsCollector.getMetricRegistry().counter(metricString).inc(resultItem.count);
@@ -83,15 +86,11 @@ public abstract class AbstractMetrics implements Metrics {
             System.out.println(makeLine(leftStr, rightStr, posWrite));
         }
 
+        //When graphite or console metrics push is enabled then publish the total read and write too
         if (isMetricsEnabled) {
             metricsCollector.getReadCount().inc(totalReadCount);
             metricsCollector.getWriteCount().inc(totalWriteCount);
         }
-    }
-
-
-    protected void publishMetrics(NavigableSet<ResultItem> readResult, NavigableSet<ResultItem> writeResult) {
-
     }
 
     @Override
@@ -102,10 +101,12 @@ public abstract class AbstractMetrics implements Metrics {
     protected String formatCounter(ResultItem resultItem, long maxCount) {
         int maxLen = String.valueOf(maxCount).length();
 
-        if (metricsMode.equals(MetricsMode.KEYSPACE)) {
+        //when the mode is not a single Keyspace then prefix the keyspace name to the metric to know from which keyspace it is
+        if (targetType.equals(TargetType.KEYSPACE)) {
             return StringUtils.leftPad(String.valueOf(resultItem.count), maxLen + 1) + " " + resultItem;
         } else {
-            return StringUtils.leftPad(String.valueOf(resultItem.count), maxLen + 1) + " " + keySpace + "." + resultItem;
+            String keyspace = resultItem.getCf().getKeyProperty("keyspace");
+            return StringUtils.leftPad(String.valueOf(resultItem.count), maxLen + 1) + " " + keyspace + "." + resultItem;
         }
     }
 

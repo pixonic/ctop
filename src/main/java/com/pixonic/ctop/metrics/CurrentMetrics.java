@@ -13,28 +13,22 @@ public class CurrentMetrics extends AbstractMetrics {
     private static final String KEY_PROPERTY = "scope";
     private static final String ATTRIBUTE = "Count";
 
-    CurrentMetrics(long interval, MBeanServerConnection remote, String keySpace, MetricsMode metricsMode, MetricsType metricsType, MetricsCollector metricsCollector) {
-        super(interval, remote, keySpace, metricsMode, metricsType, metricsCollector);
+    CurrentMetrics(long interval, MBeanServerConnection remote, String keySpace, TargetType targetType, MetricsType metricsType, MetricsCollector metricsCollector) {
+        super(interval, remote, keySpace, targetType, metricsType, metricsCollector);
     }
 
     @Override
     public void printMetrics() throws Exception {
-        String ksValue = metricsMode.equals(MetricsMode.ALL) ? "*" : keySpace;
+        String ksValue = targetType.equals(TargetType.ALL) ? "*" : keySpace;
         ObjectName readObjectName = new ObjectName("org.apache.cassandra.metrics:type=Table,keyspace=" + ksValue + ",scope=*,name=ReadLatency");
         ObjectName writeObjectName = new ObjectName("org.apache.cassandra.metrics:type=Table,keyspace=" + ksValue + ",scope=*,name=WriteLatency");
 
         List<MonitoringEntry> readItems = getMonitoringEntryList(remote, readObjectName);
         List<MonitoringEntry> writeItems = getMonitoringEntryList(remote, writeObjectName);
 
-        boolean isMetricsEnabled = !metricsType.equals(MetricsType.NONE);
-
         while (!shutdown) {
             Thread.sleep(TimeUnit.SECONDS.toMillis(interval));
             super.printMetrics(createResultItems(readItems), createResultItems(writeItems));
-
-            if(isMetricsEnabled) {
-                super.publishMetrics(createResultItems(readItems), createResultItems(writeItems));
-            }
         }
     }
 
