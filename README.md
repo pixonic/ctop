@@ -15,7 +15,7 @@ Sample properties file is given below
     ctop.interval.sec=1
 
     #cassandra confs
-    cassandra.host=<cassandraHost>
+    cassandra.host=<cassandraHost defaults to 127.0.0.1 when not given>
     cassandra.jmx.port=<jmxPort defaults to 7199 when not given>
     cassandra.jmx.username=<jmxUsername if auth enabled>
     cassandra.jmx.pw=<jmxPassword if auth enabled>
@@ -55,7 +55,13 @@ is pushed as global count and for each specific keyspace metrics like
 are published to graphiteHost.
 
 
-Example: `java -jar ctop.jar /Users/johndoe/Documents/ctop.properties`
+**Example:** `java -jar ctop.jar /Users/johndoe/Documents/ctop.properties`
+
+Use of -h as an argument prints the help/usage
+
+**Example:** `java -jar ctop.jar -h`
+
+    Usage: java -jar ctop.jar [<propertyFilePath> when not passed ctop.properties will be loaded from classpath]
 
 Use Ctrl+C to exit.
 
