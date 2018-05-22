@@ -45,7 +45,7 @@ public class Main {
 
         final JMXServiceURL target = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostAndPort + "/jmxrmi");
 
-        HashMap environment = new HashMap();
+        HashMap<String, Object> environment = new HashMap<>();
         environment.put(JMXConnector.CREDENTIALS, creds);
 
         final JMXConnector connector = JMXConnectorFactory.connect(target, (hasCreds) ? environment : null);
