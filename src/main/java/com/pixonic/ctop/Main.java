@@ -101,7 +101,5 @@ public class Main {
 
         Main objMain = new Main();
         objMain.init(properties);
-
-
     }
 }

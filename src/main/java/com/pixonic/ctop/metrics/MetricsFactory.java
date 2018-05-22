@@ -11,5 +11,4 @@ public class MetricsFactory {
             return new OldMetrics(interval, remote, keySpace, targetType, metricsType, metricsCollector);
         }
     }
-
 }

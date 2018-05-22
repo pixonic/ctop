@@ -73,5 +73,4 @@ public class CurrentMetrics extends AbstractMetrics {
             this.count = count;
         }
     }
-
 }
