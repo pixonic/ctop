@@ -20,7 +20,7 @@ public class OldMetrics extends AbstractMetrics {
     @Override
     public void printMetrics() throws Exception {
         // when Mode is All then just use *, other types like Keyspace and RegEx can be passed as it is
-        String ksValue = targetType.equals(TargetType.ALL) ? "*" : keySpace;
+        String ksValue = TargetType.ALL.equals(targetType) ? "*" : keySpace;
         ObjectName objectName = new ObjectName("org.apache.cassandra.db:type=ColumnFamilies,keyspace=" + ksValue + ",columnfamily=*");
 
         List<MonitoringEntry> items = new LinkedList<>();

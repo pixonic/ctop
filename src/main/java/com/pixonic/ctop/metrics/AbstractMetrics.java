@@ -102,7 +102,7 @@ public abstract class AbstractMetrics implements Metrics {
         int maxLen = String.valueOf(maxCount).length();
 
         //when the mode is not a single Keyspace then prefix the keyspace name to the metric to know from which keyspace it is
-        if (targetType.equals(TargetType.KEYSPACE)) {
+        if (TargetType.KEYSPACE.equals(targetType)) {
             return StringUtils.leftPad(String.valueOf(resultItem.count), maxLen + 1) + " " + resultItem;
         } else {
             String keyspace = resultItem.getCf().getKeyProperty("keyspace");

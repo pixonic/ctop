@@ -24,8 +24,8 @@ public class Main {
 
         int interval = Integer.parseInt(properties.getProperty(Constants.CONFIG_INTERVAL_SEC, "10"));
 
-        String jmxUsername = properties.getProperty(Constants.CONFIG_JMX_USERNAME).trim();
-        String jmxPassword = properties.getProperty(Constants.CONFIG_JMX_PASSWORD).trim();
+        String jmxUsername = properties.containsKey(Constants.CONFIG_JMX_USERNAME) ? properties.getProperty(Constants.CONFIG_JMX_USERNAME).trim() : null;
+        String jmxPassword = properties.containsKey(Constants.CONFIG_JMX_PASSWORD) ? properties.getProperty(Constants.CONFIG_JMX_PASSWORD).trim() : null;
 
         boolean hasCreds = false;
         String[] creds = null;
@@ -39,7 +39,7 @@ public class Main {
         System.out.println("======= Properties Loaded =======");
         System.out.println(properties.toString());
 
-        MetricsType metricsType = MetricsType.valueOf(properties.getProperty("metrics.type", "NONE"));
+        MetricsType metricsType = MetricsType.valueOf(properties.getProperty("metrics.type", "CONSOLE"));
 
         MetricsCollector metricsCollector = MetricUtils.registerMetricsReporter(metricsType, properties);
 

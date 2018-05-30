@@ -19,7 +19,7 @@ public class CurrentMetrics extends AbstractMetrics {
 
     @Override
     public void printMetrics() throws Exception {
-        String ksValue = targetType.equals(TargetType.ALL) ? "*" : keySpace;
+        String ksValue = TargetType.ALL.equals(targetType) ? "*" : keySpace;
         ObjectName readObjectName = new ObjectName("org.apache.cassandra.metrics:type=Table,keyspace=" + ksValue + ",scope=*,name=ReadLatency");
         ObjectName writeObjectName = new ObjectName("org.apache.cassandra.metrics:type=Table,keyspace=" + ksValue + ",scope=*,name=WriteLatency");
 
