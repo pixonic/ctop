@@ -6,8 +6,12 @@ You can see which column families mostly affects disk utilization in near real t
 ![Screenshot](http://i.imgur.com/6rJm3TM.png)
 
 ## Usage
-
-`java -jar ctop.jar <path to ctop.properties file>`
+- When using a properties file
+`java -jar ctop.jar -p [<propertyFilePath> when not passed ctop.properties will be loaded from classpath with argument -p]`
+- When not using a properties file
+`java -jar ctop.jar <host:jmx_port> <key_space> [interval_sec(default: 10)] when doesn't want to use any properties file`
+- To print help usage
+`java -jar ctop.jar -h to print help`
 
 Sample properties file is given below
 
@@ -55,13 +59,21 @@ is pushed as global count and for each specific keyspace metrics like
 are published to graphiteHost.
 
 
-**Example:** `java -jar ctop.jar /Users/johndoe/Documents/ctop.properties`
+**Example:** `java -jar ctop.jar -p /Users/johndoe/Documents/ctop.properties`
 
 Use of -h as an argument prints the help/usage
 
 **Example:** `java -jar ctop.jar -h`
 
-    Usage: java -jar ctop.jar [<propertyFilePath> when not passed ctop.properties will be loaded from classpath]
+	============================
+	==  Usage  =================
+	============================
+	java -jar ctop.jar -p [<propertyFilePath> when not passed ctop.properties will be loaded from classpath with argument -p]
+	java -jar ctop.jar <host:jmx_port> <key_space> [interval_sec(default: 10)] when doesn't want to use any properties file
+	java -jar ctop.jar -h to print help
+	============================
+
+Please note that to have CONSOLE or GRAPHITE reporting a properties file should be used to load the app. Run time command line  arguments will just print in the console itself.
 
 Use Ctrl+C to exit.
 
