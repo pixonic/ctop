@@ -28,6 +28,7 @@ public abstract class AbstractMetrics implements Metrics {
     }
 
     void printMetrics(NavigableSet<ResultItem> readResult, NavigableSet<ResultItem> writeResult) {
+        boolean isMetricsEnabled = !metricsType.equals(MetricsType.NONE);
         //clear console
         System.out.print("\033[H\033[2J");
         System.out.flush();
@@ -43,15 +44,17 @@ public abstract class AbstractMetrics implements Metrics {
         int posWrite = width / 2;
         String leftStr = "Reads", rightStr = "Writes";
 
-        System.out.println(makeLine(leftStr, rightStr, posWrite));
-        System.out.println();
+        if(!isMetricsEnabled) {
+            System.out.println(makeLine(leftStr, rightStr, posWrite));
+            System.out.println();
+        }
         Iterator<ResultItem> readIt = readResult.iterator();
         Iterator<ResultItem> writeIt = writeResult.iterator();
         Long maxReadCount = null, maxWriteCount = null;
 
         Long totalReadCount = 0L;
         Long totalWriteCount = 0L;
-        boolean isMetricsEnabled = !metricsType.equals(MetricsType.NONE);
+
 
         for (int i = 7; i < height; i++) {
             if (readIt.hasNext()) {
@@ -83,7 +86,11 @@ public abstract class AbstractMetrics implements Metrics {
                 rightStr = "";
             }
             if (leftStr.length() == 0 && rightStr.length() == 0) break;
-            System.out.println(makeLine(leftStr, rightStr, posWrite));
+
+            //print in console the formatted one when MetricsType is NONE
+            if(!isMetricsEnabled) {
+                System.out.println(makeLine(leftStr, rightStr, posWrite));
+            }
         }
 
         //When graphite or console metrics push is enabled then publish the total read and write too
