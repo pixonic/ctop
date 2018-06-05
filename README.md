@@ -6,12 +6,15 @@ You can see which column families mostly affects disk utilization in near real t
 ![Screenshot](http://i.imgur.com/6rJm3TM.png)
 
 ## Usage
-- When using a properties file
-`java -jar ctop.jar -p [<propertyFilePath> when not passed ctop.properties will be loaded from classpath with argument -p]`
 - When not using a properties file
-`java -jar ctop.jar <host:jmx_port> <key_space> [interval_sec(default: 10)] when doesn't want to use any properties file`
+`java -jar ctop.jar <host:jmx_port> <key_space> [interval_sec(default: 10)]`
+
+- When using a properties file. When not passed ctop.properties will be loaded from classpath with argument -p
+`java -jar ctop.jar -p [<propertyFilePath>]`
+
 - To print help usage
-`java -jar ctop.jar -h to print help`
+`java -jar ctop.jar -h`
+
 
 Sample properties file is given below
 
@@ -75,7 +78,7 @@ Use of -h as an argument prints the help/usage
 
 Please note that to have CONSOLE or GRAPHITE reporting a properties file should be used to load the app. Run time command line  arguments will just print in the console itself.
 
-Use Ctrl+C to exit.
+Use **Ctrl+C** to exit.
 
 ## Build
 Java 8 is required.
