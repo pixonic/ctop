@@ -6,12 +6,44 @@
     <artifactId>ctop</artifactId>
     <version>0.3-SNAPSHOT</version>
 
+    <properties>
+        <dropwizard.metrics.version>3.1.2</dropwizard.metrics.version>
+        <apache.commons.versions>3.4</apache.commons.versions>
+    </properties>
+
     <scm>
         <connection>scm:git:ssh://git@github.com/pixonic/ctop.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/pixonic/ctop.git</developerConnection>
         <url>http://github.com/pixonic/ctop</url>
         <tag>HEAD</tag>
     </scm>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.ryantenney.metrics</groupId>
+            <artifactId>metrics-spring</artifactId>
+            <version>${dropwizard.metrics.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-graphite</artifactId>
+            <version>${dropwizard.metrics.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-jvm</artifactId>
+            <version>${dropwizard.metrics.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${apache.commons.versions}</version>
+        </dependency>
+
+    </dependencies>
 
     <build>
         <plugins>

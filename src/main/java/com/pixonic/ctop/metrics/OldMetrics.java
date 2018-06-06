@@ -11,14 +11,17 @@ import java.util.concurrent.TimeUnit;
 public class OldMetrics extends AbstractMetrics {
 
     private static final String KEY_PROPERTY = "columnfamily";
-    private static final String[] ATTRIBUTES = new String[] {"ReadCount", "WriteCount"};
+    private static final String[] ATTRIBUTES = new String[]{"ReadCount", "WriteCount"};
 
-    OldMetrics(long interval, MBeanServerConnection remote, String keySpace) {
-        super(interval, remote, keySpace);
+    OldMetrics(long interval, MBeanServerConnection remote, String keySpace, TargetType targetType, MetricsType metricsType, MetricsCollector metricsCollector) {
+        super(interval, remote, keySpace, targetType, metricsType, metricsCollector);
     }
 
-    @Override public void printMetrics() throws Exception {
-        ObjectName objectName = new ObjectName("org.apache.cassandra.db:type=ColumnFamilies,keyspace=" + keySpace + ",columnfamily=*");
+    @Override
+    public void printMetrics() throws Exception {
+        // when Mode is All then just use *, other types like Keyspace and RegEx can be passed as it is
+        String ksValue = TargetType.ALL.equals(targetType) ? "*" : keySpace;
+        ObjectName objectName = new ObjectName("org.apache.cassandra.db:type=ColumnFamilies,keyspace=" + ksValue + ",columnfamily=*");
 
         List<MonitoringEntry> items = new LinkedList<>();
         for (ObjectName mbean : remote.queryNames(objectName, null)) {
